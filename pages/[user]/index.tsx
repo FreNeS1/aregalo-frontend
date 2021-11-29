@@ -1,4 +1,4 @@
-import styles from "../../styles/Home.module.css";
+import styles from "../../styles/ProfileSelect.module.css";
 import { MetaHeader } from "../../components/MetaHeader";
 import { TittleBar } from "../../components/TittleBar";
 import { GetStaticPaths, GetStaticProps } from "next";
