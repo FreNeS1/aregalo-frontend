@@ -1,8 +1,8 @@
 import Axios, { AxiosError, AxiosInstance, AxiosResponse } from "axios";
-import { User } from "./models";
+import { GiftPresent, User, WishCreatePresent, WishPresent } from "./models";
 import { to } from "../util";
 import morphism from "morphism";
-import { userSchema } from "./schema";
+import { giftPresentSchema, userSchema, wishPresentSchema } from "./schema";
 
 export class AregaloBackendClient {
   httpClient: AxiosInstance;
@@ -32,32 +32,119 @@ export class AregaloBackendClient {
       morphism(userSchema, data)
     );
   }
+
+  async getPresentWishList(wisher: string): Promise<WishPresent[]> {
+    const [response, err] = await to<AxiosResponse, AxiosError>(
+      this.httpClient.get(`/${wisher}/presents`)
+    );
+    return handleListResponse<WishPresent>(response, err, (data: any[]) =>
+      morphism(wishPresentSchema, data)
+    );
+  }
+
+  async createPresent(
+    wisher: string,
+    present: WishCreatePresent
+  ): Promise<WishPresent[]> {
+    const [response, err] = await to<AxiosResponse, AxiosError>(
+      this.httpClient.post(`/${wisher}/presents`, present)
+    );
+    return handleListResponse<WishPresent>(response, err, (data: any[]) =>
+      morphism(wishPresentSchema, data)
+    );
+  }
+
+  async updatePresent(
+    wisher: string,
+    present: WishPresent
+  ): Promise<WishPresent[]> {
+    const [response, err] = await to<AxiosResponse, AxiosError>(
+      this.httpClient.put(`/${wisher}/presents/${present.id}`, present)
+    );
+    return handleListResponse<WishPresent>(response, err, (data: any[]) =>
+      morphism(wishPresentSchema, data)
+    );
+  }
+
+  async deletePresent(
+    wisher: string,
+    present: WishPresent
+  ): Promise<WishPresent[]> {
+    const [response, err] = await to<AxiosResponse, AxiosError>(
+      this.httpClient.delete(`/${wisher}/presents/${present.id}`)
+    );
+    return handleListResponse<WishPresent>(response, err, (data: any[]) =>
+      morphism(wishPresentSchema, data)
+    );
+  }
+
+  async getGiftPresentList(
+    wisher: string,
+    gifter: string
+  ): Promise<GiftPresent[]> {
+    const [response, err] = await to<AxiosResponse, AxiosError>(
+      this.httpClient.get(`/${gifter}/${wisher}/presents/`)
+    );
+    return handleListResponse<GiftPresent>(response, err, (data: any[]) =>
+      morphism(giftPresentSchema, data)
+    );
+  }
+
+  async assignGifterToPresent(
+    wisher: string,
+    gifter: string,
+    present: GiftPresent
+  ): Promise<GiftPresent[]> {
+    const [response, err] = await to<AxiosResponse, AxiosError>(
+      this.httpClient.put(`/${gifter}/${wisher}/presents/${present.id}`)
+    );
+    return handleListResponse<GiftPresent>(response, err, (data: any[]) =>
+      morphism(giftPresentSchema, data)
+    );
+  }
+
+  async removeGifterFromPresent(
+    wisher: string,
+    gifter: string,
+    present: GiftPresent
+  ): Promise<GiftPresent[]> {
+    const [response, err] = await to<AxiosResponse, AxiosError>(
+      this.httpClient.delete(`/${gifter}/${wisher}/presents/${present.id}`)
+    );
+    return handleListResponse<GiftPresent>(response, err, (data: any[]) =>
+      morphism(giftPresentSchema, data)
+    );
+  }
 }
 
 function handleResponse<T>(
   response: AxiosResponse | undefined,
   err: AxiosError | null,
   mapper: (s: any) => T
-): T {
-  if (err) {
-    throw new Error(err.toJSON().toString());
-  }
-  if (response) {
-    return mapper(response.data);
-  }
-  throw new Error("Unexpected error");
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    if (err) {
+      reject(err.message);
+    }
+    if (response) {
+      resolve(mapper(response.data));
+    }
+    reject("Unexpected error in Aregalo client");
+  });
 }
 
 function handleListResponse<T>(
   response: AxiosResponse<any[]> | undefined,
   err: AxiosError | null,
   mapper: (s: any) => T[]
-): T[] {
-  if (err) {
-    throw new Error(err.toJSON().toString());
-  }
-  if (response) {
-    return mapper(response.data);
-  }
-  throw new Error("Unexpected error");
+): Promise<T[]> {
+  return new Promise((resolve, reject) => {
+    if (err) {
+      reject(err.message);
+    }
+    if (response) {
+      resolve(mapper(response.data));
+    }
+    reject("Unexpected error");
+  });
 }

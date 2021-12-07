@@ -1,4 +1,4 @@
-import styles from "../styles/ProfileSelect.module.css";
+import styles from "../styles/General.module.css";
 import { TittleBar } from "../components/TittleBar";
 import { MetaHeader } from "../components/MetaHeader";
 import {
@@ -8,13 +8,16 @@ import {
 } from "../components/UserProfile";
 import { GetStaticProps } from "next";
 import { AregaloBackendClient, User } from "../packages/aregalo-backend";
+import { Col, Container, Row } from "react-bootstrap";
+import { ErrorComponent } from "../components/Error";
 
 interface ProfileSelectProps {
+  error: string | undefined;
   users: User[];
 }
 
 const UserLink = (user: User) => (
-  <div className="col text-center">
+  <Col key={user.name} className={`${styles["user-button"]} text-center`}>
     <div className="d-inline-block border border-2 rounded-3 border-light bg-light">
       <a href={`/${user.name}`}>
         <UserProfile
@@ -25,10 +28,10 @@ const UserLink = (user: User) => (
         />
       </a>
     </div>
-  </div>
+  </Col>
 );
 
-export default function ProfileSelect({ users }: ProfileSelectProps) {
+export default function ProfileSelect({ users, error }: ProfileSelectProps) {
   return (
     <div>
       <MetaHeader
@@ -36,19 +39,29 @@ export default function ProfileSelect({ users }: ProfileSelectProps) {
         description={"The application to manage your presents"}
       />
       <TittleBar text={"Aregalo"} image={"gift.png"} />
-      <div className={`container text-center ${styles.title}`}>
-        <h1>¿Quién eres?</h1>
-      </div>
-      <br />
-      <div className={`container  ${styles.userSelect}`}>
-        <div className="row">{users.map((user) => UserLink(user))}</div>
-      </div>
+      {error != undefined ? (
+        <ErrorComponent error={error} />
+      ) : (
+        <Container className={styles.userSelect}>
+          <Row className="text-center">
+            <h2 className="h2">Quién eres?</h2>
+          </Row>
+          <Row>
+            <br />
+          </Row>
+          <Row>{users.map((user) => UserLink(user))}</Row>
+        </Container>
+      )}
     </div>
   );
 }
 
 export const getStaticProps: GetStaticProps = async () => {
   const client = new AregaloBackendClient("http://127.0.0.1:8757/aregalo");
-  const users = await client.getUsers();
-  return { props: { users } };
+  try {
+    const users = await client.getUsers();
+    return { props: { users } };
+  } catch (e) {
+    return { props: { users: [], error: e } };
+  }
 };

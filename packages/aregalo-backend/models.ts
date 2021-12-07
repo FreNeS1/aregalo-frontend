@@ -6,6 +6,16 @@ export class User {
   ) {}
 }
 
+export class WishCreatePresent {
+  constructor(
+    public title: string,
+    public description: string,
+    public favourite: boolean,
+    public link?: string,
+    public price?: number
+  ) {}
+}
+
 export class WishPresent {
   constructor(
     public id: number,
