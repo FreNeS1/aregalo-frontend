@@ -1,5 +1,6 @@
 import styles from "./PresentGift.module.css";
 import { GiftPresent, User } from "../../packages/aregalo-backend";
+import Link from "next/link";
 import Image from "next/image";
 import { UserProfile, UserProfileSize, UserProfileType } from "../UserProfile";
 
@@ -29,7 +30,11 @@ export function PresentGift({
           {present.price != undefined ? `${present.price / 100} €` : ""}
         </div>
         <div className="col-2 h6 text-center">
-          {present.link != undefined ? <a href={present.link}>enlace</a> : ""}
+          {present.link != undefined ? (
+            <Link href={present.link}>enlace</Link>
+          ) : (
+            ""
+          )}
         </div>
         <div className="col-2 text-center">
           <div className="d-inline-flex flex-wrap">

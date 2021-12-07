@@ -10,6 +10,7 @@ import { GetStaticProps } from "next";
 import { AregaloBackendClient, User } from "../packages/aregalo-backend";
 import { Col, Container, Row } from "react-bootstrap";
 import { ErrorComponent } from "../components/Error";
+import Link from "next/link";
 
 interface ProfileSelectProps {
   error: string | undefined;
@@ -19,14 +20,14 @@ interface ProfileSelectProps {
 const UserLink = (user: User) => (
   <Col key={user.name} className={`${styles["user-button"]} text-center`}>
     <div className="d-inline-block border border-2 rounded-3 border-light bg-light">
-      <a href={`/${user.name}`}>
+      <Link href={`/${user.name}`}>
         <UserProfile
           user={user}
           type={UserProfileType.Down}
           size={UserProfileSize.Big}
           border={true}
         />
-      </a>
+      </Link>
     </div>
   </Col>
 );

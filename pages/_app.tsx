@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
+    // @ts-ignore
     import("bootstrap/dist/js/bootstrap");
   }, []);
   return <Component {...pageProps} />;

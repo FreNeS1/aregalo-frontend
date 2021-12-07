@@ -15,6 +15,7 @@ import {
   UserProfileSize,
   UserProfileType,
 } from "../../components/UserProfile";
+import Link from "next/link";
 
 type WishListProps = {
   user: User;
@@ -29,14 +30,14 @@ const UserGiftListLink = (gifter: User, wisher: User) => (
     className={`col-auto ${styles["user-button"]} text-center`}
   >
     <div className="d-inline-block border border-2 rounded-3 border-light bg-light">
-      <a href={`/${gifter.name}/${wisher.name}`}>
+      <Link href={`/${gifter.name}/${wisher.name}`}>
         <UserProfile
           user={wisher}
           type={UserProfileType.Down}
           size={UserProfileSize.Icon}
           border={true}
         />
-      </a>
+      </Link>
     </div>
   </div>
 );
